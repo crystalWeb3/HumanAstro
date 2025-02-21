@@ -104,7 +104,7 @@ export default function Home() {
           <div className="relative w-full">
             <div className="flex flex-row transition-transform duration-200 pl-8 justify-start">
               <div className="flex w-auto max-w-4/5 break-words bg-gray-100 rounded-bl-md  rounded-tl-2xl rounded-r-2xl pt-2 pb-2 pl-3 pr-3 shadow-sm">
-                <p>Hey What's up?</p>
+                <p>Hey What is going on?</p>
               </div>
             </div>
             <div className="absolute left-0 top-0 w-6 h-6">
