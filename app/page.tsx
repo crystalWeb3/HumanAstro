@@ -46,9 +46,9 @@ export default function Home() {
   // }
 
   return (
-    <div className={`h-screen flex flex-col bg-[url("/b-1.jfif")]`}>
+    <div className={`flex flex-col bg-[url("/b-1.jfif")] overflow-auto bg-fixed min-h-screen`}>
       {/* Header Donald  */}
-      <div className="w-full md:fixed top-0 pt-5 pb-3 px-3 md:px-10 lg:px-14 flex justify-between">
+      <div className="w-full md:fixed top-0 pt-5 pb-3 px-3 md:px-10 lg:px-14 flex justify-between z-10">
         <div className='flex items-center gap-2'>
           <div className="bg-white rounded-[10px] w-[32px] h-[32px] flex justify-center items-center">
             {/* ---------- input the sparkle icon ---------- */}
@@ -103,11 +103,12 @@ export default function Home() {
           </div>
         </div>
       </div>
-      <div className='flex-1 overflow-auto'>
+    
+      <div className='flex-1'>
         <ChatBoard messages={messages} isBotTyping={isBotTyping} isUserTyping={isUserTyping} />
       </div>
 
-      <div className="fixed bottom-[20px] w-full px-3 md:px-0 md:w-[42rem] left-[50%] translate-x-[-50%]">
+      <div className="fixed bottom-[20px] w-full px-3 md:px-0 w-full md:w-[42rem] left-[50%] translate-x-[-50%]">
         <ChatField isUserTyping={isUserTyping} handleBotTyping={handleBotTyping} handleUserTyping={handleUserTyping} addMessage={addMessage} />
       </div>
     </div>

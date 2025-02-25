@@ -43,12 +43,14 @@ const ChatField: React.FC<IChatField> = ({ isUserTyping, handleUserTyping, handl
       handleUserTyping(false);
       handleBotTyping(true)
       try {
+          const tmpMessage = message;
+          setMessage("")
+          console.log(tmpMessage)
           const response = await fetch("/api/messages/get", {
               method: "POST",
               headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ message }),
+              body: JSON.stringify({ message: tmpMessage }),
           });
-          setMessage("")
           const data = await response.json();
           if (!response.ok) {
               handleBotTyping(false);
