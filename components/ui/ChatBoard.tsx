@@ -1,12 +1,12 @@
 'use client'
 import * as React from "react";
-import Image from "next/image";
+// import Image from "next/image";
 
-import { useState, useEffect, useRef } from "react";
-import { Input } from "@/components/ui/Input";
+import { useEffect, useRef } from "react";
+// import { Input } from "@/components/ui/Input";
 import BotMessage from "@/components/ui/BotMessage";
 import UserMessage from "@/components/ui/UserMessage";
-import TypingLoader from "@/components/ui/TypingLoader";
+// import TypingLoader from "@/components/ui/TypingLoader";
 
 import { MessageType, TypingStateType } from "@/lib/type";
 
