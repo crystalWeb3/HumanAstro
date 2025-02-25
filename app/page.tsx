@@ -48,7 +48,7 @@ export default function Home() {
   return (
     <div className={`h-screen flex flex-col bg-[url("/b-1.jfif")]`}>
       {/* Header Donald  */}
-      <div className="w-full fixed top-0 py-5 px-14 flex justify-between">
+      <div className="w-full md:fixed top-0 pt-5 pb-3 px-3 md:px-10 lg:px-14 flex justify-between">
         <div className='flex items-center gap-2'>
           <div className="bg-white rounded-[10px] w-[32px] h-[32px] flex justify-center items-center">
             {/* ---------- input the sparkle icon ---------- */}
