@@ -2,7 +2,7 @@
 import * as React from "react";
 
 import { useState, useEffect } from "react";
-import { Input } from "@/components/ui/Input";
+import { Input } from "./Input";
 import { Button } from "@/components/ui/button";
 
 import { MessageType } from "@/lib/type";
