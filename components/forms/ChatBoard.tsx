@@ -32,7 +32,7 @@ const ChatField: React.FC<IChatField> = ({ messages, isBotTyping, isUserTyping }
   return (
     <div className="flex flex-1 w-full justify-center">
         <div className="flex flex-1 flex-col pl-2 pr-2 gap-3 justify-end max-w-2xl">
-          <div className="mb-safe h-3 w-full"></div>
+          <div className="mb-safe h-16 w-full"></div>
           {/* <div className="flex justify-center items-center w-full font-favorit">
             <div className="flex flex-col justify-center items-center w-fit mt-4 mb-2">
               <h1 className="mb-1 mx-4 text-sm">

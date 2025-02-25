@@ -16,7 +16,7 @@ const BotMessage: React.FC<IBotMessage> = ({ message = '', isTyping }) => {
   return (
     <div className="relative flex items-start gap-2 mt-2">
         
-        <div className="bg-white rounded-[10px] w-[32px] h-[32px] flex justify-center items-center">
+        <div className="bg-white rounded-[10px] min-w-[32px] w-[32px] h-[32px] flex justify-center items-center">
             {/* ---------- input the sparkle icon ---------- */}
             <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <mask id="mask0_2_67" style={{maskType:'luminance'}} maskUnits="userSpaceOnUse" x="0" y="0" width="20" height="20">
