@@ -2,7 +2,7 @@
 import * as React from "react";
 import Image from "next/image";
 
-import { useState, useEffect } from "react";
+// import { useState, useEffect } from "react";
 
 interface ITyping {
     isTyping?: boolean;
@@ -18,6 +18,7 @@ const Typing: React.FC<ITyping> = ({ isTyping = false }) => {
     //     return () => clearTimeout(timer);
     // }, [])
     // if(!isShow) null; 
+    console.log(isTyping)
     return (
         <div className="flex items-center gap-2">
             <Image

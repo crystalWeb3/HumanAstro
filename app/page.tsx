@@ -2,8 +2,9 @@
 import React, { useState } from 'react';
 // import Image from "next/image";
 
-import ChatField from "@/components/ui/ChatField";
-import CharBoard from "@/components/ui/ChatBoard";
+import ChatField from "@/components/forms/ChatField";
+import ChatBoard from "@/components/forms/ChatBoard";
+// import BgSwitch from "@/components/forms/BgSwitch";
 
 import { MessageType } from '@/lib/type';
 
@@ -22,6 +23,7 @@ export default function Home() {
   const [messages, setMessages] = useState<MessageType[] | []>(fakeMessages)
   const [ isBotTyping, setIsBotTyping ] = useState<boolean>(false);
   const [ isUserTyping, setIsUserTyping ] = useState<boolean>(false);
+  // const [ bgDark, setBgDark ] = useState<boolean>(false);
 
   const handleUserTyping = (state: boolean) => {
     setIsUserTyping(state)
@@ -33,14 +35,18 @@ export default function Home() {
 
   const addMessage = (msg: MessageType) => {
     setMessages(prev => {
-      let tmp = [ ...prev ];
+      const tmp = [ ...prev ];
       tmp.push(msg);
       return tmp;
     })
   }
 
+  // const handleBgChange = (state: boolean) => {
+    
+  // }
+
   return (
-    <div className='h-screen flex flex-col bg-[url("/b-1.jfif")]'>
+    <div className={`h-screen flex flex-col bg-[url("/b-1.jfif")]`}>
       {/* Header Donald  */}
       <div className="w-full top-0 py-5 px-14 flex justify-between">
         <div className='flex items-center gap-2'>
@@ -83,6 +89,7 @@ export default function Home() {
           <span className='font-bold'>Oryn</span>
         </div>
         <div className="flex gap-3">
+          {/* <BgSwitch onChangeState={handleBgChange} /> */}
           <div className="bg-white rounded-[50%] w-[32px] h-[32px] flex justify-center items-center">
             {/* ----------------- user Icon ---------------- */}
             <svg width="16" height="17" viewBox="0 0 16 17" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -97,7 +104,7 @@ export default function Home() {
         </div>
       </div>
       <div className='flex-1 overflow-auto'>
-        <CharBoard messages={messages} isBotTyping={isBotTyping} isUserTyping={isUserTyping} />
+        <ChatBoard messages={messages} isBotTyping={isBotTyping} isUserTyping={isUserTyping} />
       </div>
 
       <div className="fixed bottom-[20px] w-full px-3 md:px-0 md:w-[42rem] left-[50%] translate-x-[-50%]">
