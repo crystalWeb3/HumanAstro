@@ -4,11 +4,11 @@ import * as React from "react";
 
 import { useEffect, useRef } from "react";
 // import { Input } from "@/components/ui/Input";
-import BotMessage from "@/components/ui/BotMessage";
-import UserMessage from "@/components/ui/UserMessage";
-// import TypingLoader from "@/components/ui/TypingLoader";
+import BotMessage from "./BotMessage";
+import UserMessage from "./UserMessage";
+// import TypingLoader from "./TypingLoader";
 
-import { MessageType, TypingStateType } from "@/lib/type";
+import { MessageType } from "@/lib/type";
 
 interface IChatField {
     messages: MessageType[] | [];

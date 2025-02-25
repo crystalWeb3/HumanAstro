@@ -1,7 +1,7 @@
 export type MessageType = {
     type: number;
     content: string;
-    [key: string]: any;
+    [key: string]: unknown;
 }
 
 export type TypingStateType = {

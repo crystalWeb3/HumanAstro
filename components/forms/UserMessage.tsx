@@ -11,7 +11,7 @@ interface IUserMessage {
     isTyping: boolean;
 }
 
-const UserMessage: React.FC<IUserMessage> = ({ message = '', isTyping }) => {
+const UserMessage: React.FC<IUserMessage> = ({ message = ''}) => {
 
   return (
     <div className="relative flex flex-row transition-transform duration-200 pl-8 justify-end">
