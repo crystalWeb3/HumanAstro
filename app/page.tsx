@@ -1,171 +1,106 @@
+'use client';
+import React, { useState } from 'react';
 import Image from "next/image";
-// import ChatFielf from "@/components/forms/ChatField";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
+
+import ChatField from "@/components/ui/ChatField";
+import CharBoard from "@/components/ui/ChatBoard";
+
+import { MessageType, TypingStateType } from '@/lib/type';
+
+const fakeMessages: MessageType[] = [
+  {
+    type: 0,
+    content: "Hey What is going on?"
+  },
+  {
+    type: 1,
+    content: "It's fine."
+  },
+]
 
 export default function Home() {
+  const [messages, setMessages] = useState<MessageType[] | []>(fakeMessages)
+  const [ isBotTyping, setIsBotTyping ] = useState<boolean>(false);
+  const [ isUserTyping, setIsUserTyping ] = useState<boolean>(false);
+
+  const handleUserTyping = (state: boolean) => {
+    setIsUserTyping(state)
+  }
+
+  const handleBotTyping = (state: boolean) => {
+    setIsBotTyping(state)
+  }
+
+  const addMessage = (msg: MessageType) => {
+    setMessages(prev => {
+      let tmp = [ ...prev ];
+      tmp.push(msg);
+      return tmp;
+    })
+  }
+
   return (
-    <div>
-      <div></div>
-
+    <div className='h-screen flex flex-col bg-[url("/b-1.jfif")]'>
       {/* Header Donald  */}
-      <div className="fixed top-0 left-0 w-full flex flex-shrink-0 justify-center items-center min-h-16 pt-safe-or-1 pb-2 transition-all duration-500 bg-white ease-in-out cursor-pointer max-h-[16] shadow-sm">
-        <div className="flex flex-col justify-center items-center w-full">
-          <div className="relative flex flex-row justify-center items-center w-full">
-            <span className="whitespace-nowrap font-miller max-w-96 opacity-100 pr-4 translate-y-[2px] overflow-hidden transition-all duration-250 ease-in-out text-xl">
-              Donald
-            </span>
-            <div className="max-h-12 w-12 h-12 mt-0 flex flex-col justify-center items-center transition-all duration-500 ease-in-out">
-              <div className="relative flex items-center justify-center w-full h-full">
-                <Image
-                  src="https://friend.com/preset/2998000b-13a1-4878-b5dc-14b6db15d1c3.jpg"
-                  alt="Avatar"
-                  width={30}
-                  height={30}
-                  className="w-full h-full rounded-full object-cover shadow-lg"
-                />
-                <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full"></div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      {/* Header buttons */}
-      <div className="flex justify-center w-full fixed top-safe-or-1 left-0 pointer-events-none ">
-        <div className="flex max-w-[768px] h-14 flex-1 mx-2">
-          <div className="flex flex-row justify-start w-1/2 gap-2">
-            <div className="flex flex-col justify-center items-center flex-grow-0 pointer-events-auto">
-              <button className="flex flex-col justify-center items-center border aspect-square rounded-full bg-white text-black w-8">
-                <svg
-                  stroke="currentColor"
-                  fill="currentColor"
-                  strokeWidth="0"
-                  viewBox="0 0 512 512"
-                  className="m-auto transition-transform duration-300 "
-                  height="1em"
-                  width="1em"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path d="M105.1 202.6c7.7-21.8 20.2-42.3 37.8-59.8c62.5-62.5 163.8-62.5 226.3 0L386.3 160H352c-17.7 0-32 14.3-32 32s14.3 32 32 32H463.5c0 0 0 0 0 0h.4c17.7 0 32-14.3 32-32V80c0-17.7-14.3-32-32-32s-32 14.3-32 32v35.2L414.4 97.6c-87.5-87.5-229.3-87.5-316.8 0C73.2 122 55.6 150.7 44.8 181.4c-5.9 16.7 2.9 34.9 19.5 40.8s34.9-2.9 40.8-19.5zM39 289.3c-5 1.5-9.8 4.2-13.7 8.2c-4 4-6.7 8.8-8.1 14c-.3 1.2-.6 2.5-.8 3.8c-.3 1.7-.4 3.4-.4 5.1V432c0 17.7 14.3 32 32 32s32-14.3 32-32V396.9l17.6 17.5 0 0c87.5 87.4 229.3 87.4 316.7 0c24.4-24.4 42.1-53.1 52.9-83.7c5.9-16.7-2.9-34.9-19.5-40.8s-34.9 2.9-40.8 19.5c-7.7 21.8-20.2 42.3-37.8 59.8c-62.5 62.5-163.8 62.5-226.3 0l-.1-.1L125.6 352H160c17.7 0 32-14.3 32-32s-14.3-32-32-32H48.4c-1.6 0-3.2 .1-4.8 .3s-3.1 .5-4.6 1z"></path>
-                </svg>
-              </button>
-            </div>
-            <div className="transition-opacity opacity-0 pointer-events-none duration-500 backdrop-blur-lg flex flex-col justify-center items-center w-screen h-screen fixed top-0 left-0 bg-white/50 gap-4">
-              <p className="text-4xl font-miller">Meet Someone New?</p>
-              <div className="flex flex-row justify-center items-center gap-8">
-                <button className="text-white text-lg font-favorit rounded-2xl bg-zinc-800 hover:bg-danger-red px-4 py-2 transition-colors">
-                  Yes
-                </button>
-                <button className="text-black text-lg font-favorit rounded-2xl bg-white border-zinc-800 hover:bg-zinc-100 px-4 py-2 transition-colors">
-                  No{" "}
-                </button>
-              </div>
-            </div>
-          </div>
-          <div className="flex flex-row justify-end w-1/2 gap-2">
-            <div className="flex flex-col justify-center items-center flex-grow-0 pointer-events-auto">
-              <button className="flex flex-col justify-center items-center border aspect-square rounded-full bg-white text-black w-8">
-                <svg
-                  stroke="currentColor"
-                  fill="currentColor"
-                  strokeWidth="0"
-                  viewBox="0 0 24 24"
-                  className="inline-block undefined"
-                  height="1em"
-                  width="1em"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path d="M18.4144 9.00015L12.0002 2.58594L5.58594 9.00015H11V16H13V9.00015H18.4144ZM3 14V18C3 19.6569 4.34315 21 6 21H18C19.6569 21 21 19.6569 21 18V14H19V18C19 18.5523 18.5523 19 18 19H6C5.44772 19 5 18.5523 5 18V14H3Z"></path>
-                </svg>
-              </button>
-            </div>
-            <div className="flex flex-col justify-center items-center flex-grow-0 text-md text-stone-300 transition-all duration-300 underline pointer-events-auto">
-              <button className="flex flex-col justify-center items-center border aspect-square rounded-full bg-white text-black w-8">
-                <svg
-                  stroke="currentColor"
-                  fill="currentColor"
-                  strokeWidth="0"
-                  viewBox="0 0 512 512"
-                  className="inline-block undefined"
-                  height="1em"
-                  width="1em"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path d="M495.9 166.6c3.2 8.7 .5 18.4-6.4 24.6l-43.3 39.4c1.1 8.3 1.7 16.8 1.7 25.4s-.6 17.1-1.7 25.4l43.3 39.4c6.9 6.2 9.6 15.9 6.4 24.6c-4.4 11.9-9.7 23.3-15.8 34.3l-4.7 8.1c-6.6 11-14 21.4-22.1 31.2c-5.9 7.2-15.7 9.6-24.5 6.8l-55.7-17.7c-13.4 10.3-28.2 18.9-44 25.4l-12.5 57.1c-2 9.1-9 16.3-18.2 17.8c-13.8 2.3-28 3.5-42.5 3.5s-28.7-1.2-42.5-3.5c-9.2-1.5-16.2-8.7-18.2-17.8l-12.5-57.1c-15.8-6.5-30.6-15.1-44-25.4L83.1 425.9c-8.8 2.8-18.6 .3-24.5-6.8c-8.1-9.8-15.5-20.2-22.1-31.2l-4.7-8.1c-6.1-11-11.4-22.4-15.8-34.3c-3.2-8.7-.5-18.4 6.4-24.6l43.3-39.4C64.6 273.1 64 264.6 64 256s.6-17.1 1.7-25.4L22.4 191.2c-6.9-6.2-9.6-15.9-6.4-24.6c4.4-11.9 9.7-23.3 15.8-34.3l4.7-8.1c6.6-11 14-21.4 22.1-31.2c5.9-7.2 15.7-9.6 24.5-6.8l55.7 17.7c13.4-10.3 28.2-18.9 44-25.4l12.5-57.1c2-9.1 9-16.3 18.2-17.8C227.3 1.2 241.5 0 256 0s28.7 1.2 42.5 3.5c9.2 1.5 16.2 8.7 18.2 17.8l12.5 57.1c15.8 6.5 30.6 15.1 44 25.4l55.7-17.7c8.8-2.8 18.6-.3 24.5 6.8c8.1 9.8 15.5 20.2 22.1 31.2l4.7 8.1c6.1 11 11.4 22.4 15.8 34.3zM256 336a80 80 0 1 0 0-160 80 80 0 1 0 0 160z"></path>
-                </svg>
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div className="flex flex-1 w-full justify-center">
-        <div className="flex flex-1 flex-col-reverse pl-2 pr-2 gap-2 justify-end max-w-screen-md">
-          <div className="mb-safe h-14 w-full"></div>
-          <div className="relative w-full">
-            <div className="flex flex-row transition-transform duration-200 pl-8 justify-start">
-              <div className="flex w-auto max-w-4/5 break-words bg-gray-100 rounded-bl-md  rounded-tl-2xl rounded-r-2xl pt-2 pb-2 pl-3 pr-3 shadow-sm">
-                <p>Hey What is going on?</p>
-              </div>
-            </div>
-            <div className="absolute left-0 top-0 w-6 h-6">
-              <div className="relative flex items-center justify-center w-full h-full">
-                <Image
-                  src="https://friend.com/preset/2998000b-13a1-4878-b5dc-14b6db15d1c3.jpg"
-                  alt="Avatar"
-                  width={20}
-                  height={20}
-                  className="w-full h-full rounded-full object-cover shadow-lg"
-                />
-              </div>
-            </div>
-          </div>
-
-          <div className="relative w-full">
-            <div className="flex flex-row transition-transform duration-200 pl-8 justify-end">
-              <div className="flex w-auto max-w-4/5 break-words bg-zinc-800 text-slate-50 rounded-br-2xl rounded-t-2xl rounded-l-2xl pt-2 pb-2 pl-3 pr-3 shadow-sm">
-                <p>How are you?</p>
-              </div>
-            </div>
-          </div>
-          <div className="flex justify-center items-center w-full font-favorit">
-            <div className="flex flex-col justify-center items-center w-fit mt-4 mb-2">
-              <h1 className="mb-1 mx-4 text-sm">
-                <span className="text-stone-500 opacity-80">Today </span>
-                <span> </span>
-                <span className="text-stone-500 opacity-60">10:39 PM</span>
-              </h1>
-            </div>
-          </div>
-
-          <div className="mb-safe h-14 w-full"></div>
-        </div>
-      </div>
-
-      <div className="absolute bottom-[20px] w-[50%] left-[50%] translate-x-[-50%]">
-        <div className="flex">
-          <Input
-            className="bg-gray-100 border-rounded rounded-[40px]"
-            placeholder="Message"
-          />
-          <Button
-            variant="outline"
-            size="icon"
-            className="border-rounded rounded-[30px] ml-[10px]"
-          >
-            <svg
-              stroke="currentColor"
-              fill="currentColor"
-              strokeWidth="0"
-              viewBox="0 0 512 512"
-              className="inline-block undefined"
-              height="1em"
-              width="1em"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path d="M476 3.2L12.5 270.6c-18.1 10.4-15.8 35.6 2.2 43.2L121 358.4l287.3-253.2c5.5-4.9 13.3 2.6 8.6 8.3L176 407v80.5c0 23.6 28.5 32.9 42.5 15.8L282 426l124.6 52.2c14.2 6 30.4-2.9 33-18.2l72-432C515 7.8 493.3-6.8 476 3.2z"></path>
+      <div className="w-full top-0 py-5 px-14 flex justify-between">
+        <div className='flex items-center gap-2'>
+          <div className="bg-white rounded-[10px] w-[32px] h-[32px] flex justify-center items-center">
+            {/* ---------- input the sparkle icon ---------- */}
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <mask id="mask0_2_67" style={{maskType:'luminance'}} maskUnits="userSpaceOnUse" x="0" y="0" width="20" height="20">
+                <path d="M20 0H0V20H20V0Z" fill="white"/>
+                </mask>
+                <g mask="url(#mask0_2_67)">
+                <mask id="mask1_2_67" style={{maskType:'alpha'}} maskUnits="userSpaceOnUse" x="1" y="1" width="18" height="18">
+                <path d="M10.0276 18.75C10.305 14.0559 14.0566 10.295 18.75 10.0061L18.75 9.97239C14.0559 9.69504 10.295 5.94342 10.0061 1.25002L9.97237 1.25006C9.69502 5.94416 5.94339 9.70502 1.25 9.99392L1.25004 10.0277C5.94413 10.305 9.70499 14.0566 9.99389 18.75L10.0276 18.75Z" fill="url(#paint0_linear_2_67)"/>
+                </mask>
+                <g mask="url(#mask1_2_67)">
+                <path d="M10 0C15.519 0 20 4.481 20 10C20 15.519 15.519 20 10 20C4.481 20 0 15.519 0 10C0 4.481 4.481 0 10 0Z" fill="url(#paint1_linear_2_67)"/>
+                </g>
+                </g>
+                <defs>
+                <linearGradient id="paint0_linear_2_67" x1="4.24217" y1="15.3134" x2="16.5324" y2="4.8595" gradientUnits="userSpaceOnUse">
+                <stop stopColor="#217BFE"/>
+                <stop offset="0.14" stopColor="#1485FC"/>
+                <stop offset="0.27" stopColor="#078EFB"/>
+                <stop offset="0.52" stopColor="#548FFD"/>
+                <stop offset="0.78" stopColor="#A190FF"/>
+                <stop offset="0.89" stopColor="#AF94FE"/>
+                <stop offset="1" stopColor="#BD99FE"/>
+                </linearGradient>
+                <linearGradient id="paint1_linear_2_67" x1="7.49812" y1="12.8938" x2="15.0575" y2="5.07125" gradientUnits="userSpaceOnUse">
+                <stop stopColor="#217BFE"/>
+                <stop offset="0.14" stopColor="#1485FC"/>
+                <stop offset="0.27" stopColor="#078EFB"/>
+                <stop offset="0.52" stopColor="#548FFD"/>
+                <stop offset="0.78" stopColor="#A190FF"/>
+                <stop offset="0.89" stopColor="#AF94FE"/>
+                <stop offset="1" stopColor="#BD99FE"/>
+                </linearGradient>
+                </defs>
             </svg>
-          </Button>
+          </div>
+          <span className='font-bold'>Oryn</span>
         </div>
+        <div className="bg-white rounded-[50%] w-[32px] h-[32px] flex justify-center items-center">
+          {/* ----------------- user Icon ---------------- */}
+          <svg width="16" height="17" viewBox="0 0 16 17" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <mask id="mask0_2_60" style={{maskType:'alpha'}} maskUnits="userSpaceOnUse" x="0" y="0" width="16" height="17">
+            <rect y="0.333313" width="16" height="16" fill="#D9D9D9"/>
+            </mask>
+            <g mask="url(#mask0_2_60)">
+            <path d="M8 8.12815C7.35833 8.12815 6.80906 7.89971 6.35217 7.44282C5.89517 6.98582 5.66667 6.43649 5.66667 5.79482C5.66667 5.15315 5.89517 4.60388 6.35217 4.14699C6.80906 3.68999 7.35833 3.46149 8 3.46149C8.64167 3.46149 9.19094 3.68999 9.64783 4.14699C10.1048 4.60388 10.3333 5.15315 10.3333 5.79482C10.3333 6.43649 10.1048 6.98582 9.64783 7.44282C9.19094 7.89971 8.64167 8.12815 8 8.12815ZM3 12.1923V11.723C3 11.3965 3.08867 11.0942 3.266 10.816C3.44333 10.5378 3.68033 10.3239 3.977 10.1743C4.63589 9.85132 5.30061 9.60904 5.97117 9.44749C6.64172 9.28593 7.318 9.20515 8 9.20515C8.682 9.20515 9.35828 9.28593 10.0288 9.44749C10.6994 9.60904 11.3641 9.85132 12.023 10.1743C12.3197 10.3239 12.5567 10.5378 12.734 10.816C12.9113 11.0942 13 11.3965 13 11.723V12.1923C13 12.4734 12.9015 12.7125 12.7045 12.9097C12.5075 13.1067 12.2684 13.2052 11.9872 13.2052H4.01283C3.73161 13.2052 3.4925 13.1067 3.2955 12.9097C3.0985 12.7125 3 12.4734 3 12.1923ZM4 12.2052H12V11.723C12 11.588 11.9609 11.463 11.8827 11.348C11.8044 11.2331 11.6983 11.1393 11.5642 11.0667C10.9897 10.7838 10.4041 10.5694 9.80717 10.4237C9.21017 10.278 8.60778 10.2052 8 10.2052C7.39222 10.2052 6.78983 10.278 6.19283 10.4237C5.59594 10.5694 5.01028 10.7838 4.43583 11.0667C4.30172 11.1393 4.19556 11.2331 4.11733 11.348C4.03911 11.463 4 11.588 4 11.723V12.2052ZM8 7.12815C8.36667 7.12815 8.68056 6.9976 8.94167 6.73649C9.20278 6.47538 9.33333 6.16149 9.33333 5.79482C9.33333 5.42815 9.20278 5.11426 8.94167 4.85315C8.68056 4.59204 8.36667 4.46149 8 4.46149C7.63333 4.46149 7.31944 4.59204 7.05833 4.85315C6.79722 5.11426 6.66667 5.42815 6.66667 5.79482C6.66667 6.16149 6.79722 6.47538 7.05833 6.73649C7.31944 6.9976 7.63333 7.12815 8 7.12815Z" fill="#1C1B1F"/>
+            </g>
+          </svg>
+
+        </div>
+      </div>
+      <div className='flex-1 overflow-auto'>
+        <CharBoard messages={messages} isBotTyping={isBotTyping} isUserTyping={isUserTyping} />
+      </div>
+
+      <div className="fixed bottom-[20px] w-full px-3 md:px-0 md:w-[42rem] left-[50%] translate-x-[-50%]">
+        <ChatField isUserTyping={isUserTyping} handleBotTyping={handleBotTyping} handleUserTyping={handleUserTyping} addMessage={addMessage} />
       </div>
     </div>
   );
