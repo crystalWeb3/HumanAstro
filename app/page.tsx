@@ -46,9 +46,9 @@ export default function Home() {
   // }
 
   return (
-    <div className={`flex flex-col bg-[url("/b-1.jfif")] overflow-auto bg-fixed min-h-screen`}>
+    <div className={`bg-[url("/b-1.jfif")] pt-16 md:pt-0 bg-fixed min-h-screen`}>
       {/* Header Donald  */}
-      <div className="w-full md:fixed top-0 pt-5 pb-3 px-3 md:px-10 lg:px-14 flex justify-between z-10">
+      <div className="w-full fixed top-0 pt-5 pb-3 px-3 md:px-10 lg:px-14 flex justify-between z-10 bg-[url('/b-1.jfif')] md:bg-none">
         <div className='flex items-center gap-2'>
           <div className="bg-white rounded-[10px] w-[32px] h-[32px] flex justify-center items-center">
             {/* ---------- input the sparkle icon ---------- */}
@@ -104,7 +104,7 @@ export default function Home() {
         </div>
       </div>
     
-      <div className='flex-1'>
+      <div className='flex-1 overflow-auto'>
         <ChatBoard messages={messages} isBotTyping={isBotTyping} isUserTyping={isUserTyping} />
       </div>
 
