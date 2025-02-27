@@ -24,7 +24,7 @@ export async function POST(req: NextRequest) {
                 
                 const houses = extractHouses(message);
                 if(houses.length === 0) return sendResponse(`I apologize, but I am unable to respond to questions that are outside the scope of the topic.`, 201); 
-                let responseArr :string[] = [];
+                const responseArr :string[] = [];
 
                 if(!userData.hdchart || !userData.astrologychart) {
                     const hdchart = await fetchHDChart(birthdate);
@@ -36,7 +36,6 @@ export async function POST(req: NextRequest) {
                     for(let i = 0; i < houses.length; i++) {
                         responseArr.push(astrologychart[houses[i] - 1].personalised_prediction);
                     }
-                    
                     return sendResponse(`${responseArr.join(" ")}`, 201);
                 }
 
@@ -67,7 +66,7 @@ export async function POST(req: NextRequest) {
                 const location = message;
                 const formattedBirthDate = new Date(userData.birthdate).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
                 if (!location) {
-                    return sendResponse(`I know Your birthdate is ${formattedBirthDate}. You have to give me at least one location information.`, 200);
+                    return sendResponse(`I know your birthdate is ${formattedBirthDate}. You have to give me at least one location information.`, 200);
                 }
                 
                 const geometry = await extractGeometry(location);
