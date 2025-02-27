@@ -8,7 +8,7 @@ export async function POST(req: NextRequest) {
     if(!userid) return NextResponse.json({ error: "Userid not found." }, { status: 400 });
 
     try {
-        await redis.set(userid, '', 'EX', 60);
+        await redis.del(userid);
         return NextResponse.json({ msg: "Refresh redis success" }, { status: 201 });
     } catch (error) {
         if (error instanceof Error) {

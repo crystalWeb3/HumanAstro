@@ -79,7 +79,7 @@ export default function Home() {
               addMessage({type: 0, content: "Sorry, Some issue occured. Please try again."});
               console.log("Refresh failed.")
           } else {
-              localStorage.clear();
+              localStorage.setItem("userid", generateCode());
               setMessages([{type: 0, content: "Welcom to HumanAstro. I'm Oryn. To provide you with personalized insights, please enter your birthdate in the format MM/DD/YYYY."}]);
               console.log("Refresh success.")
           }
@@ -89,15 +89,17 @@ export default function Home() {
       }
     } else {
       setMessages([{type: 0, content: "Welcom to HumanAstro. I'm Oryn. To provide you with personalized insights, please enter your birthdate in the format MM/DD/YYYY."}]);
-      localStorage.clear();
+      localStorage.setItem("userid", generateCode());
     }
     
   }
 
   useEffect(() => {
     const userid = localStorage.getItem("userid");
+    console.log('frontuserid', userid)
     if(!userid) {
       localStorage.setItem("userid", generateCode());
+      console.log('generateduserid', localStorage.getItem("userid"))
       setMessages([{type: 0, content:"Welcom to HumanAstro. I'm Oryn. To provide you with personalized insights, please enter your birthdate in the format MM/DD/YYYY."}]);
     } else {
       addMessage({type: 0, content:"Welcom to HumanAstro."});

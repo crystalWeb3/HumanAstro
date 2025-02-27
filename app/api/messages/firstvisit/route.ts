@@ -8,8 +8,9 @@ export async function POST(req: NextRequest) {
 
     try {
         const { message, userid } = await req.json();
-        console.log(userid)
+        console.log('userid', userid)
         const userDataString = await redis.get(userid);
+        console.log('userDataString', userDataString)
         const sendResponse = (msg: string, status: number) =>
             NextResponse.json({ msg }, { status });
 
