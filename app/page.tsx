@@ -22,8 +22,8 @@ export default function Home() {
   const [messages, setMessages] = useState<MessageType[] | []>([])
   const [ isBotTyping, setIsBotTyping ] = useState<boolean>(false);
   const [ isUserTyping, setIsUserTyping ] = useState<boolean>(false);
-  const [ birthdate, setBirthdate] = useState<string>('');
-  const [ location, setLocation ] = useState<string>('');
+  // const [ birthdate, setBirthdate] = useState<string>('');
+  // const [ location, setLocation ] = useState<string>('');
   // const [ bgDark, setBgDark ] = useState<boolean>(false);
 
   const handleUserTyping = (state: boolean) => {
