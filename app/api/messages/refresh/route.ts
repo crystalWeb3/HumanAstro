@@ -1,10 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
+import Redis from 'ioredis';
 
 export async function POST(req: NextRequest) {
-    const { message } = await req.json();
+    const { userid } = await req.json();
+    const redis = new Redis(process.env.REDIS_URL!);
+
+    if(!userid) return NextResponse.json({ error: "Userid not found." }, { status: 400 });
 
     try {
-        return NextResponse.json({ msg: "Unsubscribe success.", content: message }, { status: 201 });
+        await redis.set(userid, '', 'EX', 60);
+        return NextResponse.json({ msg: "Refresh redis success" }, { status: 201 });
     } catch (error) {
         if (error instanceof Error) {
             console.error(error.message);

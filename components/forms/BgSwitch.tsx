@@ -14,7 +14,7 @@ interface IBgSwitch {
 const BgSwitch: React.FC<IBgSwitch> = ({onChangeState}) => {
   const [ isDark, setIsDark ] = useState<boolean>(true);
 
-  const handleClick = () => {
+  const handleClick = async() => {
     if(onChangeState) onChangeState(!isDark);
     setIsDark(!isDark);
   }

@@ -1,7 +1,7 @@
 'use client'
 import * as React from "react";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
@@ -12,9 +12,10 @@ interface IChatField {
   handleUserTyping: (state: boolean) => void;
   handleBotTyping: (state: boolean) => void;
   addMessage: (msg: MessageType) => void;
+  onSubmit:(msg: string) => Promise<void>;
 }
 
-const ChatField: React.FC<IChatField> = ({ isUserTyping, handleUserTyping, handleBotTyping, addMessage}) => {
+const ChatField: React.FC<IChatField> = ({ isUserTyping, handleUserTyping, handleBotTyping, addMessage, onSubmit}) => {
   const [ message, setMessage] = useState<string>('');
   const typingTimeoutRef = React.useRef<NodeJS.Timeout | null>(null);
 
@@ -36,29 +37,47 @@ const ChatField: React.FC<IChatField> = ({ isUserTyping, handleUserTyping, handl
     }, 1000);
   }
 
+  // const handleSubmit = async (e: React.FormEvent) => {
+  //   e.preventDefault();
+  //   if (message.trim()) {
+  //     addMessage({type: 1, content: message});
+  //     handleUserTyping(false);
+  //     handleBotTyping(true)
+  //     try {
+  //         const tmpMessage = message;
+  //         setMessage("")
+  //         console.log(tmpMessage)
+  //         const response = await fetch("/api/messages/firstvisit", {
+  //             method: "POST",
+  //             headers: { "Content-Type": "application/json" },
+  //             body: JSON.stringify({ message: tmpMessage }),
+  //         });
+  //         const data = await response.json();
+  //         if (!response.ok) {
+  //             handleBotTyping(false);
+  //             console.log("Sending message failed.")
+  //         } else {
+  //             addMessage({type: 0, content: data.content})
+  //             console.log("Message sent successfully.")
+  //         }
+  //     } catch (error : unknown) {
+  //         console.log(error)
+  //     } finally {
+  //       handleBotTyping(false)
+  //     }
+  //   }
+  // }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (message.trim()) {
       addMessage({type: 1, content: message});
-      handleUserTyping(false);
-      handleBotTyping(true)
+      // handleUserTyping(false);
+      // handleBotTyping(true)
       try {
           const tmpMessage = message;
           setMessage("")
-          console.log(tmpMessage)
-          const response = await fetch("/api/messages/get", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ message: tmpMessage }),
-          });
-          const data = await response.json();
-          if (!response.ok) {
-              handleBotTyping(false);
-              console.log("Sending message failed.")
-          } else {
-              addMessage({type: 0, content: data.content})
-              console.log("Message sent successfully.")
-          }
+          await onSubmit(tmpMessage)
       } catch (error : unknown) {
           console.log(error)
       } finally {
@@ -67,9 +86,6 @@ const ChatField: React.FC<IChatField> = ({ isUserTyping, handleUserTyping, handl
     }
   }
 
-  useEffect(() => {
-
-  }, [])
   return (
     <form className="w-full h-[56px] relative flex items-center justify-between bg-[#FFFFFF] rounded-[30px] p-3 overflow-hidden" onSubmit={handleSubmit}>
       <Input

@@ -1,28 +1,29 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 // import Image from "next/image";
+// import jwt from "jsonwebtoken";
 
 import ChatField from "@/components/forms/ChatField";
 import ChatBoard from "@/components/forms/ChatBoard";
+import Refresh from "@/components/forms/RefreshButton"
 // import BgSwitch from "@/components/forms/BgSwitch";
 
 import { MessageType } from '@/lib/type';
+import { generateCode } from '@/lib/utils';
 
-const fakeMessages: MessageType[] = [
-  {
-    type: 0,
-    content: "Hey What is going on?"
-  },
-  {
-    type: 1,
-    content: "It's fine."
-  },
-]
-
+// const fakeMessages: MessageType[] = [
+//   {
+//     type: 0,
+//     content: "Hi, I'm Oryn. To provide you with personalized insights, please enter your birthdate in the format MM/DD/YYYY.",
+//   },
+// ]
+ 
 export default function Home() {
-  const [messages, setMessages] = useState<MessageType[] | []>(fakeMessages)
+  const [messages, setMessages] = useState<MessageType[] | []>([])
   const [ isBotTyping, setIsBotTyping ] = useState<boolean>(false);
   const [ isUserTyping, setIsUserTyping ] = useState<boolean>(false);
+  const [ birthdate, setBirthdate] = useState<string>('');
+  const [ location, setLocation ] = useState<string>('');
   // const [ bgDark, setBgDark ] = useState<boolean>(false);
 
   const handleUserTyping = (state: boolean) => {
@@ -41,10 +42,68 @@ export default function Home() {
     })
   }
 
-  // const handleBgChange = (state: boolean) => {
-    
-  // }
+  const handleSubmit = async (msg: string) => {
+      setIsBotTyping(true);
+      try {
+          const response = await fetch("/api/messages/firstvisit", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ message: msg, userid: localStorage.getItem("userid") }),
+          });
+          const data = await response.json();
+          if (!response.ok) {
+              setIsBotTyping(false);
+              console.log("Sending message failed.")
+              addMessage({ type: 0, content: "Sorry, there are some issues on my side. Please try again."})
+          } else {
+              addMessage({type: 0, content: data.msg})
+              console.log("Message sent successfully.")
+          }
+      } catch (error : unknown) {
+          addMessage({ type: 0, content: "Sorry, there are some issues on my side. Please try again."})
+          console.log(error)
+      } finally {
+        setIsBotTyping(false)
+      }
+  }
 
+  const handleRefresh = async () => {
+    if(localStorage.getItem("userid")) {
+      try {
+          const response = await fetch("/api/messages/refresh", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ userid: localStorage.getItem("userid")})
+          });
+          if (!response.ok) {
+              addMessage({type: 0, content: "Sorry, Some issue occured. Please try again."});
+              console.log("Refresh failed.")
+          } else {
+              localStorage.clear();
+              setMessages([{type: 0, content: "Welcom to HumanAstro. I'm Oryn. To provide you with personalized insights, please enter your birthdate in the format MM/DD/YYYY."}]);
+              console.log("Refresh success.")
+          }
+      } catch (error : unknown) {
+          addMessage({type: 0, content: "Sorry, Some issue occured. Please try again."});
+          console.log(error)
+      }
+    } else {
+      setMessages([{type: 0, content: "Welcom to HumanAstro. I'm Oryn. To provide you with personalized insights, please enter your birthdate in the format MM/DD/YYYY."}]);
+      localStorage.clear();
+    }
+    
+  }
+
+  useEffect(() => {
+    const userid = localStorage.getItem("userid");
+    if(!userid) {
+      localStorage.setItem("userid", generateCode());
+      setMessages([{type: 0, content:"Welcom to HumanAstro. I'm Oryn. To provide you with personalized insights, please enter your birthdate in the format MM/DD/YYYY."}]);
+    } else {
+      addMessage({type: 0, content:"Welcom to HumanAstro."});
+      handleSubmit('');
+    }
+  }, [])
   return (
     <div className={`bg-[url("/b-1.jfif")] pt-16 md:pt-0 bg-fixed min-h-screen`}>
       {/* Header Donald  */}
@@ -90,6 +149,7 @@ export default function Home() {
         </div>
         <div className="flex gap-3">
           {/* <BgSwitch onChangeState={handleBgChange} /> */}
+          <Refresh onClick={handleRefresh} />
           <div className="bg-white rounded-[50%] w-[32px] h-[32px] flex justify-center items-center">
             {/* ----------------- user Icon ---------------- */}
             <svg width="16" height="17" viewBox="0 0 16 17" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -109,7 +169,7 @@ export default function Home() {
       </div>
 
       <div className="fixed bottom-[20px] w-full px-3 md:px-0 w-full md:w-[42rem] left-[50%] translate-x-[-50%]">
-        <ChatField isUserTyping={isUserTyping} handleBotTyping={handleBotTyping} handleUserTyping={handleUserTyping} addMessage={addMessage} />
+        <ChatField isUserTyping={isUserTyping} handleBotTyping={handleBotTyping} handleUserTyping={handleUserTyping} addMessage={addMessage} onSubmit={handleSubmit} />
       </div>
     </div>
   );
