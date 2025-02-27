@@ -50,7 +50,6 @@ export const fetchVedicChart = async ({ birthdate, lat, lon, tz } : {birthdate: 
   try {
     const response = await axios.get(`${VEDIC_URL}/personal-characteristics?dob=${newbirthdate}&tob=00:00&lat=${lat}&lon=${lon}&tz=${tz}&api_key=${process.env.VEDIC_KEY}&lang=en`);
     const data = response.data;
-    console.log(response.data)
     if(data.status !== 200) return false;
     return data.response as HouseType[];
   } catch (error) {
@@ -126,7 +125,6 @@ export const generateCode = (): string  => {
 
 export const validateDate = (dateString:string): boolean => {
   const date = new Date(dateString.split('/').join('-'));
-  console.log(date.getTime())
   return !isNaN(date.getTime());
 }
 
@@ -141,8 +139,6 @@ export const extractGeometry = async (location: string) => {
       },
     });
     const { status, results } = response.data;
-    console.log(response.data)
-  
     if(status?.code !== 200 || !status?.code) return null;
   
     if(results.length === 0) return null;
@@ -161,7 +157,6 @@ export const extractHouses = (input: string): number[] | [] => {
   const num_houses = [];
   for (const key in houses) {
     if(input.toLowerCase().includes(key)) {
-      console.log(key)
       num_houses.push(houses[key]);
     }
   }
