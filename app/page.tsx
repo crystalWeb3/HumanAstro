@@ -1,7 +1,7 @@
 'use client';
 import React, { useState, useEffect } from 'react';
 // import Image from "next/image";
-import jwt from "jsonwebtoken";
+// import jwt from "jsonwebtoken";
 
 import ChatField from "@/components/forms/ChatField";
 import ChatBoard from "@/components/forms/ChatBoard";
@@ -11,12 +11,12 @@ import Refresh from "@/components/forms/RefreshButton"
 import { MessageType } from '@/lib/type';
 import { generateCode } from '@/lib/utils';
 
-const fakeMessages: MessageType[] = [
-  {
-    type: 0,
-    content: "Hi, I'm Oryn. To provide you with personalized insights, please enter your birthdate in the format MM/DD/YYYY.",
-  },
-]
+// const fakeMessages: MessageType[] = [
+//   {
+//     type: 0,
+//     content: "Hi, I'm Oryn. To provide you with personalized insights, please enter your birthdate in the format MM/DD/YYYY.",
+//   },
+// ]
  
 export default function Home() {
   const [messages, setMessages] = useState<MessageType[] | []>([])

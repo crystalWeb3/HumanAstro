@@ -46,10 +46,10 @@ export const fetchHDTransit = async (birthdate: string ) => {
 
 export const fetchVedicChart = async ({ birthdate, lat, lon, tz } : {birthdate: string, lat: number, lon: number, tz: number}) => {
   const [month, day, year] = birthdate.split('/');
-  let newbirthdate = `${day}/${month}/${year}`;
+  const newbirthdate = `${day}/${month}/${year}`;
   try {
     const response = await axios.get(`${VEDIC_URL}/personal-characteristics?dob=${newbirthdate}&tob=00:00&lat=${lat}&lon=${lon}&tz=${tz}&api_key=${process.env.VEDIC_KEY}&lang=en`);
-    let data = response.data;
+    const data = response.data;
     console.log(response.data)
     if(data.status !== 200) return false;
     return data.response as HouseType[];
@@ -59,9 +59,11 @@ export const fetchVedicChart = async ({ birthdate, lat, lon, tz } : {birthdate: 
   }
 };
 
-export const fetchVedicTransit = async (birthdate: string) => {
+export const fetchVedicTransit = async ({ birthdate, lat, lon, tz } : {birthdate: string, lat: number, lon: number, tz: number}) => {
+  const [month, day, year] = birthdate.split('/');
+  const newbirthdate = `${day}/${month}/${year}`;
   try {
-    const response = await axios.post(`${VEDIC_URL}`, { birthdate, location });
+    const response = await axios.post(`${VEDIC_URL}`, { birthdate: newbirthdate, location, lat, lon, tz });
     return response.data;
   } catch (error) {
     console.error('Error fetching Vedic Astrology data:', error);
@@ -156,7 +158,7 @@ export const extractGeometry = async (location: string) => {
 }
 
 export const extractHouses = (input: string): number[] | [] => {
-  let num_houses = [];
+  const num_houses = [];
   for (const key in houses) {
     if(input.toLowerCase().includes(key)) {
       console.log(key)
