@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import Redis from 'ioredis';
 import { UserType } from "@/lib/type";
-import { extractDate, extractGeometry, validateDate, fetchHDChart, fetchVedicChart } from '../../../../lib/utils';
+import { extractDate, extractGeometry, validateDate, fetchHDChart, fetchVedicChart, extractHouses } from '../../../../lib/utils';
 import axios from "axios";
 
 // const testChatGPT = async () => {
@@ -34,7 +34,7 @@ import axios from "axios";
 
 const askGPT = async (ask: string) => {
     try {
-        console.log("ASK GPT")
+        // console.log("ASK GPT")
         const response = await axios.post('https://api.openai.com/v1/chat/completions', {
             model: 'gpt-4o',
             messages: [
@@ -65,19 +65,19 @@ export async function POST(req: NextRequest) {
 
     try {
         const { message, userid } = await req.json();
-        console.log('userid', userid)
-        console.log(message)
+        // console.log('userid', userid)
+        // console.log(message)
         const userDataString = await redis.get(userid);
-        console.log('userDataString', userDataString)
+        // console.log('userDataString', userDataString)
         // await testChatGPT()
         const sendResponse = (msg: string, status: number) =>
             NextResponse.json({ msg }, { status });
 
-        
+
 
         if (userDataString) {
             const userData: UserType = JSON.parse(userDataString);
-            console.log(userData?.birthdate)
+            // console.log(userData?.birthdate)
 
             if (userData?.birthdate && userData?.location) {
                 const { birthdate, lat, lon, tz } = userData;
@@ -85,11 +85,9 @@ export async function POST(req: NextRequest) {
 
                 if (message === '') return sendResponse(`Your birthdate is ${formattedBirthDate} and Birth location ${userData.location}. Please feel free to ask any questions related to the following areas: Self, Wealth, Communication, Home, Creativity, Health, Partnership, Transformation, Luck, Career, Friendships, and Secrets.`, 201);
 
-                // const houses = extractHouses(message);
-                // if (houses.length === 0) return sendResponse(`I apologize, but I am unable to respond to questions that are outside the scope of the topic.`, 201);
+                const houses = extractHouses(message);
+                if (houses.length === 0) return sendResponse(`I apologize, but I am unable to respond to questions that are outside the scope of the topic.`, 201);
 
-                console.log(message)
-              
                 if (!userData.hdchart || !userData.astrologychart) {
                     const hdchart = await fetchHDChart(birthdate);
                     const astrologychart = await fetchVedicChart({ birthdate, lat, lon, tz });
@@ -99,20 +97,23 @@ export async function POST(req: NextRequest) {
                     // console.log(data)
                     await redis.set(userid, JSON.stringify(data), 'EX', 3600);
                     // console.log(hdchart)
-                    const ask = JSON.stringify(hdchart) + "\\n" + "This is my chart data. Answer about below. Don't include any chart or astrology workds where it comes from, just make it real human talking and clear and short. I can be good, it looks like a philosophy." + "\\n" + message;
+                    const responseArr = [];
+                    for (let i = 0; i < houses.length; i++) {
+                        responseArr.push(astrologychart[houses[i] - 1].personalised_prediction);
+                    }
+                    const ask = JSON.stringify(responseArr) + "This is my Prediction" + JSON.stringify(userData.hdchart) + "\\n" + "This is my chart data. Give me the prediction and explain why it is. Don't include any chart or astrology words, it must not look like it is came from chart. Make it clear and short." + "\\n" + message;
                     // console.log(ask)
                     const gptResponse = await askGPT(ask)
 
                     return sendResponse(`${gptResponse}`, 201);
                 }
                 // console.log(userData?.hdchart)
+                const responseArr = [];
+                for (let i = 0; i < houses.length; i++) {
+                    responseArr.push(userData.astrologychart[houses[i] - 1].personalised_prediction);
+                }                
+                const ask = JSON.stringify(responseArr) + "This is my Prediction" + JSON.stringify(userData.hdchart) + "\\n" + "This is my chart data. Give me the prediction and explain why it is. Don't include any chart or astrology words, it must not look like it is came from chart. Make it clear and short." + "\\n" + message;
 
-                // for(let i = 0; i < houses.length; i++) {
-                //     responseArr.push(userData.astrologychart[houses[i] - 1].personalised_prediction);
-                // }
-                console.log(userData.hdchart)
-                const ask =  JSON.stringify(userData.hdchart) + "\\n" + "This is my chart data. Answer about below. Don't include any chart or astrology workds where it comes from, just make it real human talking and clear and short. I can be good, it looks like a philosophy." + "\\n" + message;
-                
                 const gptResponse = await askGPT(ask)
 
                 return sendResponse(`${gptResponse}`, 201);
