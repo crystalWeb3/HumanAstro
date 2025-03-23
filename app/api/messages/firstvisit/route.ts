@@ -1,36 +1,35 @@
 import { NextRequest, NextResponse } from "next/server";
 import Redis from 'ioredis';
 import { UserType } from "@/lib/type";
-import { extractDate, extractGeometry, validateDate, fetchHDChart, fetchVedicChart, extractHouses } from '../../../../lib/utils';
+import { extractDate, extractGeometry, validateDate, fetchHDChart, fetchVedicChart } from '../../../../lib/utils';
 import axios from "axios";
-import { json } from "stream/consumers";
 
-const testChatGPT = async () => {
-    try {
-        console.log("Test GPT")
-        const response = await axios.post('https://api.openai.com/v1/chat/completions', {
-            model: 'gpt-4o',
-            messages: [
-                {
-                    role: 'user',
-                    content: 'Are you chatgpt paid version?'
-                }
-            ]
-        },
-            {
-                headers: {
-                    'Content-Type': 'application/json',
-                    Authorization: `Bearer ${process.env.OPENAI_API_KEY}`
-                }
-            }
-        )
+// const testChatGPT = async () => {
+//     try {
+//         console.log("Test GPT")
+//         const response = await axios.post('https://api.openai.com/v1/chat/completions', {
+//             model: 'gpt-4o',
+//             messages: [
+//                 {
+//                     role: 'user',
+//                     content: 'Are you chatgpt paid version?'
+//                 }
+//             ]
+//         },
+//             {
+//                 headers: {
+//                     'Content-Type': 'application/json',
+//                     Authorization: `Bearer ${process.env.OPENAI_API_KEY}`
+//                 }
+//             }
+//         )
 
-        console.dir(response.data.choices)
+//         console.dir(response.data.choices)
 
-    } catch (error) {
-        console.dir(error)
-    }
-}
+//     } catch (error) {
+//         console.dir(error)
+//     }
+// }
 
 
 const askGPT = async (ask: string) => {
@@ -56,6 +55,7 @@ const askGPT = async (ask: string) => {
         return response.data.choices[0]?.message?.content;
 
     } catch (error) {
+        console.log(error)
         return "Something went wrong with AI."
     }
 }
@@ -98,10 +98,10 @@ export async function POST(req: NextRequest) {
                     const data = { ...userData, hdchart, astrologychart }
                     // console.log(data)
                     await redis.set(userid, JSON.stringify(data), 'EX', 3600);
-                    console.log(hdchart)
-                    let ask = JSON.stringify(hdchart) + "\\n" + "This is my chart data. Answer about below. But Please don't include any astrology workds or things like that, just make it real human talking and clear and short. I can be good, it looks like a philosophy." + "\\n" + message;
-                    console.log(ask)
-                    let gptResponse = await askGPT(ask)
+                    // console.log(hdchart)
+                    const ask = JSON.stringify(hdchart) + "\\n" + "This is my chart data. Answer about below. Don't include any chart or astrology workds where it comes from, just make it real human talking and clear and short. I can be good, it looks like a philosophy." + "\\n" + message;
+                    // console.log(ask)
+                    const gptResponse = await askGPT(ask)
 
                     return sendResponse(`${gptResponse}`, 201);
                 }
@@ -111,9 +111,9 @@ export async function POST(req: NextRequest) {
                 //     responseArr.push(userData.astrologychart[houses[i] - 1].personalised_prediction);
                 // }
                 console.log(userData.hdchart)
-                let ask =  JSON.stringify(userData.hdchart) + "\\n" + "This is my chart data. Answer about below. But Please don't include any astrology workds or things like that, just make it real human talking and clear and short. I can be good, it looks like a philosophy." + "\\n" + message;
-                console.log(ask)
-                let gptResponse = await askGPT(ask)
+                const ask =  JSON.stringify(userData.hdchart) + "\\n" + "This is my chart data. Answer about below. Don't include any chart or astrology workds where it comes from, just make it real human talking and clear and short. I can be good, it looks like a philosophy." + "\\n" + message;
+                
+                const gptResponse = await askGPT(ask)
 
                 return sendResponse(`${gptResponse}`, 201);
             }
