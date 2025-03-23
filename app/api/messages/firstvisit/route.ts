@@ -2,6 +2,63 @@ import { NextRequest, NextResponse } from "next/server";
 import Redis from 'ioredis';
 import { UserType } from "@/lib/type";
 import { extractDate, extractGeometry, validateDate, fetchHDChart, fetchVedicChart, extractHouses } from '../../../../lib/utils';
+import axios from "axios";
+import { json } from "stream/consumers";
+
+const testChatGPT = async () => {
+    try {
+        console.log("Test GPT")
+        const response = await axios.post('https://api.openai.com/v1/chat/completions', {
+            model: 'gpt-4o',
+            messages: [
+                {
+                    role: 'user',
+                    content: 'Are you chatgpt paid version?'
+                }
+            ]
+        },
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${process.env.OPENAI_API_KEY}`
+                }
+            }
+        )
+
+        console.dir(response.data.choices)
+
+    } catch (error) {
+        console.dir(error)
+    }
+}
+
+
+const askGPT = async (ask: string) => {
+    try {
+        console.log("ASK GPT")
+        const response = await axios.post('https://api.openai.com/v1/chat/completions', {
+            model: 'gpt-4o',
+            messages: [
+                {
+                    role: 'user',
+                    content: ask
+                }
+            ]
+        },
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${process.env.OPENAI_API_KEY}`
+                }
+            }
+        )
+
+        return response.data.choices[0]?.message?.content;
+
+    } catch (error) {
+        return "Something went wrong with AI."
+    }
+}
 
 export async function POST(req: NextRequest) {
     const redis = new Redis(process.env.REDIS_URL!);
@@ -9,54 +66,68 @@ export async function POST(req: NextRequest) {
     try {
         const { message, userid } = await req.json();
         console.log('userid', userid)
+        console.log(message)
         const userDataString = await redis.get(userid);
         console.log('userDataString', userDataString)
+        // await testChatGPT()
         const sendResponse = (msg: string, status: number) =>
             NextResponse.json({ msg }, { status });
 
+        
+
         if (userDataString) {
             const userData: UserType = JSON.parse(userDataString);
+            console.log(userData?.birthdate)
 
-            if (userData.birthdate && userData.location) {
+            if (userData?.birthdate && userData?.location) {
                 const { birthdate, lat, lon, tz } = userData;
                 const formattedBirthDate = new Date(userData.birthdate).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
 
-                if(message === '') return sendResponse(`Your birthdate is ${formattedBirthDate} and Birth location ${userData.location}. Please feel free to ask any questions related to the following areas: Self, Wealth, Communication, Home, Creativity, Health, Partnership, Transformation, Luck, Career, Friendships, and Secrets.`, 201);
-                
-                const houses = extractHouses(message);
-                if(houses.length === 0) return sendResponse(`I apologize, but I am unable to respond to questions that are outside the scope of the topic.`, 201); 
-                const responseArr :string[] = [];
+                if (message === '') return sendResponse(`Your birthdate is ${formattedBirthDate} and Birth location ${userData.location}. Please feel free to ask any questions related to the following areas: Self, Wealth, Communication, Home, Creativity, Health, Partnership, Transformation, Luck, Career, Friendships, and Secrets.`, 201);
 
-                if(!userData.hdchart || !userData.astrologychart) {
+                // const houses = extractHouses(message);
+                // if (houses.length === 0) return sendResponse(`I apologize, but I am unable to respond to questions that are outside the scope of the topic.`, 201);
+
+                console.log(message)
+              
+                if (!userData.hdchart || !userData.astrologychart) {
                     const hdchart = await fetchHDChart(birthdate);
                     const astrologychart = await fetchVedicChart({ birthdate, lat, lon, tz });
-                    if(!hdchart || !astrologychart) return sendResponse(`Sorry, there is an issue on the backside. Just try again.`, 201); 
-                    const data = { ...userData, hdchart, astrologychart}
+                    if (!hdchart || !astrologychart) return sendResponse(`Sorry, there is an issue on the backside. Just try again.`, 201);
+                    // console.log(hdchart)
+                    const data = { ...userData, hdchart, astrologychart }
+                    // console.log(data)
                     await redis.set(userid, JSON.stringify(data), 'EX', 3600);
-                    
-                    for(let i = 0; i < houses.length; i++) {
-                        responseArr.push(astrologychart[houses[i] - 1].personalised_prediction);
-                    }
-                    return sendResponse(`${responseArr.join(" ")}`, 201);
-                }
+                    console.log(hdchart)
+                    let ask = JSON.stringify(hdchart) + "\\n" + "This is my chart data. Answer about below. But Please don't include any astrology workds or things like that, just make it real human talking and clear and short. I can be good, it looks like a philosophy." + "\\n" + message;
+                    console.log(ask)
+                    let gptResponse = await askGPT(ask)
 
-                for(let i = 0; i < houses.length; i++) {
-                    responseArr.push(userData.astrologychart[houses[i] - 1].personalised_prediction);
+                    return sendResponse(`${gptResponse}`, 201);
                 }
-                
-                return sendResponse(`${responseArr.join(" ")}`, 201);
+                // console.log(userData?.hdchart)
+
+                // for(let i = 0; i < houses.length; i++) {
+                //     responseArr.push(userData.astrologychart[houses[i] - 1].personalised_prediction);
+                // }
+                console.log(userData.hdchart)
+                let ask =  JSON.stringify(userData.hdchart) + "\\n" + "This is my chart data. Answer about below. But Please don't include any astrology workds or things like that, just make it real human talking and clear and short. I can be good, it looks like a philosophy." + "\\n" + message;
+                console.log(ask)
+                let gptResponse = await askGPT(ask)
+
+                return sendResponse(`${gptResponse}`, 201);
             }
             if (!userData.birthdate) {
                 const birthdate = extractDate(message);
                 if (!birthdate) {
                     return sendResponse("First of all, please enter your birthdate in the format MM/DD/YYYY.", 200);
                 }
-        
+
                 if (!validateDate(birthdate)) {
                     return sendResponse("Oops, Date format is invaild. Please enter your birthdate in the format MM/DD/YYYY.", 200);
                 }
                 const { lat, lon, tz, location } = userData;
-                const data = { userid, lat, lon, tz, location, birthdate};
+                const data = { userid, lat, lon, tz, location, birthdate };
                 await redis.set(userid, JSON.stringify(data), 'EX', 3600);
                 const formattedBirthDate = new Date(birthdate).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
                 return sendResponse(`Thank you! Your birthdate is ${formattedBirthDate}. Now, please enter your birth location to proceed. Please separate the address, city, state, country and postal code using comma`, 201);
@@ -69,7 +140,7 @@ export async function POST(req: NextRequest) {
                 if (!location) {
                     return sendResponse(`I know your birthdate is ${formattedBirthDate}. You have to give me at least one location information.`, 200);
                 }
-                
+
                 const geometry = await extractGeometry(location);
                 if (!geometry) {
                     return sendResponse("Sorry, I can't find your location on the map. Please input vaild information and separate using comma.", 200);
